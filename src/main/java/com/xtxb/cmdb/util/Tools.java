@@ -1,7 +1,7 @@
 package com.xtxb.cmdb.util;
 
 /**
- * 作者: xtxb-fedora
+ * 作者: xtxb
  * <p>
  * 日期: 2020年06月18日-下午4:48
  * <p>
