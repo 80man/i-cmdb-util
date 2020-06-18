@@ -6,6 +6,7 @@ import com.xtxb.cmdb.util.ToolsFactory;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.Arrays;
+import java.util.Iterator;
 
 /**
  * 作者: xtxb
@@ -19,13 +20,17 @@ public class App
 {
     public static void main( String[] args ) {
 
-        System.out.println("当前支持的工具为："+Arrays.asList(ToolsFactory.getNames()));
+        System.out.println("当前支持的工具为：");
+        for (Iterator iterator = ToolsFactory.getNames().keySet().iterator(); iterator.hasNext(); ) {
+            String next =  (String)iterator.next();
+            System.out.println("\t"+next+":\t"+ ToolsFactory.getNames().get(next));
+        }
         String name=null;
         try{
             BufferedReader br=new BufferedReader(new InputStreamReader(System.in));
             System.out.print("请输入工具名称: ");
             while((name=br.readLine())!=null){
-                if(Arrays.binarySearch(ToolsFactory.getNames(),name)>=0)
+                if(ToolsFactory.getNames().containsKey(name))
                     break;
                 else if(name.equals("C"))
                     System.exit(0);
@@ -52,6 +57,7 @@ public class App
                         params[index++]=line;
                         if(index==params.length)
                             break;
+                        System.out.print(params[index]+":");
                     }
                     tool.work(params);
                 } catch (Exception e) {

@@ -1,5 +1,6 @@
 package com.xtxb.cmdb.util;
 
+import com.xtxb.cmdb.util.sql.ExcelTemplete;
 import com.xtxb.cmdb.util.sql.SqlCreater;
 
 import java.util.HashMap;
@@ -14,16 +15,19 @@ import java.util.Map;
  * TODO
  */
 public class ToolsFactory {
-    private static String[] names=new  String[]{"sql"};
+    private static Map<String,String> namesMap=new HashMap<>();
 
     private static Map<String,Class> claMap=new HashMap<>();
 
     static{
+        namesMap.put("sql","将Excel中的模型信息转换成SQL脚本");
+        namesMap.put("excel","生成用于整理i-CMDB模型的Excel模板");
         claMap.put("sql", SqlCreater.class);
+        claMap.put("excel", ExcelTemplete.class);
     }
 
-    public static String[] getNames(){
-        return names;
+    public static Map<String,String> getNames(){
+        return namesMap;
     }
 
     public static Tools getTools(String name) throws Exception{
