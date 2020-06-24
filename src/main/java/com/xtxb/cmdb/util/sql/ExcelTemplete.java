@@ -44,9 +44,11 @@ public class ExcelTemplete implements Tools {
         HSSFWorkbook workbook = new HSSFWorkbook();
         HSSFSheet sheetc=workbook.createSheet("资源类型信息");
         HSSFSheet sheetp=workbook.createSheet("属性信息");
+        HSSFSheet sheets=workbook.createSheet("关系类型信息");
 
         initModel(sheetc);
         initProperty(sheetp);
+        initRelation(sheets);
 
         return workbook;
     }
@@ -196,6 +198,53 @@ public class ExcelTemplete implements Tools {
         cell.setCellValue("32|64，属性值校验规则值，枚举：以 | 分割的多个值； 正则：正则表达式；引用： 关联资源类型的名称");
     }
 
+
+    /**
+     * 填充资源类型模板
+     * @param sheet
+     */
+    private void initRelation(HSSFSheet sheet){
+        HSSFRow row= sheet.createRow(0);
+        HSSFCellStyle style=getStyle(sheet.getWorkbook());
+
+        HSSFCell cell=row.createCell(0);
+        cell.setCellStyle(style);
+        cell.setCellValue("中文名称");
+        sheet.setColumnWidth(0,3000);
+
+        cell=row.createCell(1);
+        cell.setCellStyle(style);
+        cell.setCellValue("英文名称");
+        sheet.setColumnWidth(1,3000);
+
+        cell=row.createCell(2);
+        cell.setCellStyle(style);
+        cell.setCellValue("源端资源类型");
+        sheet.setColumnWidth(2,5000);
+
+        cell=row.createCell(3);
+        cell.setCellStyle(style);
+        cell.setCellValue("目的端资源类型");
+        sheet.setColumnWidth(3,5000);
+
+        style=getDataStyle(sheet.getWorkbook());
+        row= sheet.createRow(1);
+        cell=row.createCell(0);
+        cell.setCellStyle(style);
+        cell.setCellValue("样例:网络连接");
+
+        cell=row.createCell(1);
+        cell.setCellStyle(style);
+        cell.setCellValue("R_Connection");
+
+        cell=row.createCell(2);
+        cell.setCellStyle(style);
+        cell.setCellValue("服务器");
+
+        cell=row.createCell(3);
+        cell.setCellStyle(style);
+        cell.setCellValue("交换机");
+    }
 
     /**
      *  创建表格标题行样式

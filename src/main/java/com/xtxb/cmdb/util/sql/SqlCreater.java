@@ -26,32 +26,49 @@ public class SqlCreater implements Tools {
         if(wb==null)
             return;
 
+        System.out.println("读取Excel中的信息...");
+        System.out.println("读取模型信息");
         Map<String,String[]> models=getModels(wb.getSheetAt(0));
         if(models==null || models.size()==0)
             return;
+        System.out.println("读取属性信息");
         Map<String,String[]> properties=getProperties(wb.getSheetAt(1));
 
+        System.out.println("读取关系信息");
+        Map<String,String[]> relations=getRelations(wb.getSheetAt(2));
 
         //检查资源类型是否存在
+        System.out.println("检查资源类型是否存在");
         for (Iterator iterator = models.values().iterator(); iterator.hasNext(); ) {
             String[] model =  (String[])iterator.next();
             if(model[3]!=null && !model[3].equals("") && models.get(model[3])==null){
-                System.out.println("第"+model[0]+"行关联的父模型中文名称不存在，请检查Excel并修复问题后导入");
+                System.out.println("\t第"+model[0]+"行关联的父模型中文名称不存在，请检查Excel并修复问题后导入");
                 return;
             }
         }
 
         //检查属性关联的资源类型是否存在
+        System.out.println("检查属性关联的资源类型是否存在");
         for (Iterator iterator = properties.values().iterator(); iterator.hasNext(); ) {
             String[] property =  (String[])iterator.next();
             if(models.get(property[3])==null){
-                System.out.println("第"+property[0]+"行关联的父模型中文名称不存在，请检查Excel并修复问题后导入");
+                System.out.println("\t第"+property[0]+"行关联的父模型中文名称不存在，请检查Excel并修复问题后导入");
                 return;
             }
         }
 
-        writeSQLDDL(models,properties);
-        writeSQLDML(models,properties);
+        //检查关系模型关联的资源类型是否存在
+        System.out.println("检查关系模型关联的资源类型是否存在");
+        for (Iterator iterator = relations.values().iterator(); iterator.hasNext(); ) {
+            String[] relation =  (String[])iterator.next();
+            if(models.get(relation[3])==null || models.get(relation[4])==null){
+                System.out.println("\t第"+relation[0]+"行关联的资源类型中文名称不存在，请检查Excel并修复问题后导入");
+                return;
+            }
+        }
+
+        writeSQLDDL(models,properties,relations);
+        writeSQLDML(models,properties,relations);
     }
 
     /**
@@ -74,6 +91,38 @@ public class SqlCreater implements Tools {
      * @param sheet
      * @return
      */
+    private Map<String,String[]> getRelations(HSSFSheet sheet){
+        Map<String,String[]> relations=new HashMap<>();
+        HSSFRow row=null;
+        int i=1;
+        while((row=sheet.getRow(i++))!=null){
+            String cnName=getCellValue(row.getCell(0));
+            String enName=getCellValue(row.getCell(1));
+            String sModel =getCellValue(row.getCell(2));
+            String tModel=getCellValue(row.getCell(3));
+
+            if(isNull(cnName) && isNull(enName) && isNull(sModel) && isNull(tModel)){
+                return relations;
+            }else if(isNull(cnName) || isNull(enName) || isNull(sModel) || isNull(tModel)){
+                System.out.println("\t第"+i+"行有未填写的信息，请检查Excel并修复问题后导入");
+                System.exit(0);
+            }
+
+            if(relations.containsKey(cnName)){
+                System.out.println("\t第"+i+"行中文名称与第"+relations.get(cnName)[0]+"行重复，请检查Excel并修复问题后导入");
+                System.exit(0);
+            }
+            relations.put(cnName,new String[]{""+i,cnName,enName,sModel,tModel});
+        }
+
+        return relations;
+    }
+
+    /**
+     * 解析表格，获取所有的模型信息
+     * @param sheet
+     * @return
+     */
     private Map<String,String[]> getModels(HSSFSheet sheet){
         Map<String,String[]> models=new HashMap<>();
         HSSFRow row=null;
@@ -86,13 +135,13 @@ public class SqlCreater implements Tools {
             if(isNull(cnName) && isNull(enName) && isNull(pName)){
                 return models;
             }else if(isNull(cnName) || isNull(enName)){
-                System.out.println("第"+i+"行有未填写的信息，请检查Excel并修复问题后导入");
-                return null;
+                System.out.println("\t第"+i+"行有未填写的信息，请检查Excel并修复问题后导入");
+                System.exit(0);
             }
 
             if(models.containsKey(cnName)){
-                System.out.println("第"+i+"行中文名称与第"+models.get(cnName)[0]+"行重复，请检查Excel并修复问题后导入");
-                return null;
+                System.out.println("\t第"+i+"行中文名称与第"+models.get(cnName)[0]+"行重复，请检查Excel并修复问题后导入");
+                System.exit(0);
             }
             models.put(cnName,new String[]{""+i,cnName,enName,pName});
         }
@@ -122,13 +171,13 @@ public class SqlCreater implements Tools {
             if(isNull(cnName) && isNull(enName) && isNull(pName) && isNull(group) && isNull(type) && isNull(defValue) && isNull(matchRuleType) && isNull(matchRuleValue)){
                 return properties;
             }else if(isNull(cnName) || isNull(enName) || isNull(pName) || isNull(group) || isNull(type)){
-                System.out.println("第"+i+"行有未填写的信息，请检查Excel并修复问题后导入");
-                return null;
+                System.out.println("\t第"+i+"行有未填写的信息，请检查Excel并修复问题后导入");
+                System.exit(0);
             }
 
             if(properties.containsKey(cnName) && pName.equals(properties.get(cnName)[3])){
-                System.out.println("第"+i+"行中文名称与第"+properties.get(cnName)[0]+"行重复，请检查Excel并修复问题后导入");
-                return null;
+                System.out.println("\t第"+i+"行中文名称与第"+properties.get(cnName)[0]+"行重复，请检查Excel并修复问题后导入");
+                System.exit(0);
             }
             properties.put(cnName,new String[]{""+i,cnName,enName,pName,group,type,defValue,matchRuleType,matchRuleValue});
         }
@@ -140,7 +189,7 @@ public class SqlCreater implements Tools {
      * @param models
      * @param properties
      */
-    private void writeSQLDML(Map<String,String[]> models,Map<String,String[]> properties){
+    private void writeSQLDML(Map<String,String[]> models,Map<String,String[]> properties,Map<String,String[]> relations){
         StringBuilder sb=new StringBuilder();
         for (Iterator iterator = models.values().iterator(); iterator.hasNext(); ) {
             String[] model =  (String[])iterator.next();
@@ -185,6 +234,14 @@ public class SqlCreater implements Tools {
                     ((property[8]==null || property[8].equals(""))?"NULL":("'"+property[8]+"'"))  +
                     ");\n");
         }
+
+        sb.append("\n");
+
+        for (Iterator iterator = relations.values().iterator(); iterator.hasNext(); ) {
+            String[] relation =  (String[])iterator.next();
+            sb.append("insert into  R_META values('"+relation[2]+"','"+relation[1]+"','"+relation[3]+"','"+relation[4]+"');\n");
+        }
+
         try(
                 BufferedWriter bw=new BufferedWriter(new FileWriter(System.getProperty("user.dir")+"/DML.sql"))
         ){
@@ -200,7 +257,7 @@ public class SqlCreater implements Tools {
      * @param models
      * @param properties
      */
-    private void writeSQLDDL(Map<String,String[]> models,Map<String,String[]> properties){
+    private void writeSQLDDL(Map<String,String[]> models,Map<String,String[]> properties,Map<String,String[]> relations){
 
         List<String> temp=null;
         StringBuilder sb=new StringBuilder();
@@ -219,6 +276,13 @@ public class SqlCreater implements Tools {
         sb.append("DEFVALUE varchar(200),\n");
         sb.append("MATCHRULE numeric(1),\n");
         sb.append("MATCHRULEVALUE varchar(200)\n");
+        sb.append(");\n");
+
+        sb.append("CREATE TABLE R_META (\n");
+        sb.append("ENNAME varchar(32),\n");
+        sb.append("CNNANE varchar(100),\n");
+        sb.append("SOURCEMODEL varchar(32),\n");
+        sb.append("TARGETMODEL varchar(32)\n");
         sb.append(");\n");
 
         for (Iterator iterator = models.values().iterator(); iterator.hasNext(); ) {
@@ -255,6 +319,20 @@ public class SqlCreater implements Tools {
 
             sb.append("\n);\n");
             sb.append("ALTER TABLE "+tname+" ADD INDEX "+tname+"_IND_P_SID (P_SID);\n\n");
+        }
+
+        for (Iterator<String[]> Iterator3 = relations.values().iterator(); Iterator3.hasNext(); ) {
+            String[] relation =  Iterator3.next();
+            String rtable=relation[2];
+            if(!rtable.startsWith("R_")){
+                rtable="R_"+rtable.toUpperCase();
+            }
+            sb.append("CREATE TABLE "+rtable +" (\n");
+            sb.append("R_SID numeric(20),\n");
+            sb.append("R_TID numeric(20),\n");
+            sb.append("R_NOTE varchar(100)\n");
+            sb.append(");\n");
+            sb.append("ALTER TABLE "+rtable+" ADD INDEX "+rtable+"_IND (R_SID,R_TID);\n\n");
         }
 
         try(
