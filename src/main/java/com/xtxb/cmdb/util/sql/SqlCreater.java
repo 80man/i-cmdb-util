@@ -318,7 +318,7 @@ public class SqlCreater implements Tools {
             }
 
             sb.append("\n);\n");
-            sb.append("ALTER TABLE "+tname+" ADD INDEX "+tname+"_IND_P_SID (P_SID);\n\n");
+            sb.append("CREATE INDEX "+tname+"_IND_P_SID ON "+tname+" (P_SID);\n\n");
         }
 
         for (Iterator<String[]> Iterator3 = relations.values().iterator(); Iterator3.hasNext(); ) {
@@ -332,7 +332,7 @@ public class SqlCreater implements Tools {
             sb.append("R_TID numeric(20),\n");
             sb.append("R_NOTE varchar(100)\n");
             sb.append(");\n");
-            sb.append("ALTER TABLE "+rtable+" ADD INDEX "+rtable+"_IND (R_SID,R_TID);\n\n");
+            sb.append("CREATE INDEX "+rtable+"_IND ON "+rtable+" (R_SID,R_TID);\n\n");
         }
 
         try(
