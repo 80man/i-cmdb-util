@@ -131,6 +131,7 @@ public class SqlCreater implements Tools {
             String cnName=getCellValue(row.getCell(0));
             String enName=getCellValue(row.getCell(1));
             String pName=getCellValue(row.getCell(2));
+            String actions=getCellValue(row.getCell(3));
 
             if(isNull(cnName) && isNull(enName) && isNull(pName)){
                 return models;
@@ -143,7 +144,7 @@ public class SqlCreater implements Tools {
                 System.out.println("\t第"+i+"行中文名称与第"+models.get(cnName)[0]+"行重复，请检查Excel并修复问题后导入");
                 System.exit(0);
             }
-            models.put(cnName,new String[]{""+i,cnName,enName,pName});
+            models.put(cnName,new String[]{""+i,cnName,enName,pName,actions});
         }
 
         return models;
@@ -193,10 +194,15 @@ public class SqlCreater implements Tools {
         StringBuilder sb=new StringBuilder();
         for (Iterator iterator = models.values().iterator(); iterator.hasNext(); ) {
             String[] model =  (String[])iterator.next();
+            String pName="NULL";
+            String actions="NULL";
             if(model[3]!=null && !model[3].equals(""))
-                sb.append("insert into  M_META values('"+model[2]+"','"+model[1]+"','"+models.get(model[3])[2]+"');\n");
-            else
-                sb.append("insert into  M_META values('"+model[2]+"','"+model[1]+"',NULL);\n");
+                pName="'"+models.get(model[3])[2]+"'";
+            if(model[4]!=null && !model[4].equals(""))
+                actions="'"+model[4]+"'";
+
+
+            sb.append("insert into  M_META values('"+model[2]+"','"+model[1]+"',"+pName+","+actions+" );\n");
         }
 
 
@@ -264,7 +270,8 @@ public class SqlCreater implements Tools {
         sb.append("CREATE TABLE M_META (\n");
         sb.append("ENNAME varchar(32),\n");
         sb.append("CNNANE varchar(32),\n");
-        sb.append("PNANE varchar(32)\n");
+        sb.append("PNANE varchar(32),\n");
+        sb.append("ACTIONNAMES varchar(500)\n");
         sb.append(");\n ");
 
         sb.append("CREATE TABLE P_META (\n");
