@@ -131,7 +131,6 @@ public class SqlCreater implements Tools {
             String cnName=getCellValue(row.getCell(0));
             String enName=getCellValue(row.getCell(1));
             String pName=getCellValue(row.getCell(2));
-            String actions=getCellValue(row.getCell(3));
 
             if(isNull(cnName) && isNull(enName) && isNull(pName)){
                 return models;
@@ -144,7 +143,7 @@ public class SqlCreater implements Tools {
                 System.out.println("\t第"+i+"行中文名称与第"+models.get(cnName)[0]+"行重复，请检查Excel并修复问题后导入");
                 System.exit(0);
             }
-            models.put(cnName,new String[]{""+i,cnName,enName,pName,actions});
+            models.put(cnName,new String[]{""+i,cnName,enName,pName});
         }
 
         return models;

@@ -77,11 +77,6 @@ public class ExcelTemplete implements Tools {
         cell.setCellValue("父模型中文名称");
         sheet.setColumnWidth(2,5000);
 
-        cell=row.createCell(3);
-        cell.setCellStyle(style);
-        cell.setCellValue("支持的动作");
-        sheet.setColumnWidth(3,5000);
-
         style=getDataStyle(sheet.getWorkbook());
         row= sheet.createRow(1);
         cell=row.createCell(0);
@@ -96,9 +91,6 @@ public class ExcelTemplete implements Tools {
         cell.setCellStyle(style);
         cell.setCellValue("服务器");
 
-        cell=row.createCell(3);
-        cell.setCellStyle(style);
-        cell.setCellValue("动作的英文名称,如：del,add");
     }
 
     /**
