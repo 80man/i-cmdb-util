@@ -194,14 +194,10 @@ public class SqlCreater implements Tools {
         for (Iterator iterator = models.values().iterator(); iterator.hasNext(); ) {
             String[] model =  (String[])iterator.next();
             String pName="NULL";
-            String actions="NULL";
             if(model[3]!=null && !model[3].equals(""))
                 pName="'"+models.get(model[3])[2]+"'";
-            if(model[4]!=null && !model[4].equals(""))
-                actions="'"+model[4]+"'";
 
-
-            sb.append("insert into  M_META values('"+model[2]+"','"+model[1]+"',"+pName+","+actions+" );\n");
+            sb.append("insert into  M_META values('"+model[2]+"','"+model[1]+"',"+pName+" );\n");
         }
 
 
@@ -225,14 +221,15 @@ public class SqlCreater implements Tools {
                 type=6;
             }
 
-            int rtype=1;
+            int rtype=0;
             if(property[7].equals("值域")){
                 rtype=1;
             }else if(property[7].equals("正则")){
                 rtype=2;
-            }else{
+            }else if(property[7].equals("引用")){
                 rtype = 3;
             }
+
             sb.append("insert into  P_META values('"+property[2]+"','"+property[1]+"','"+pname+"','"+property[4]+"',"+type+"," +
                     ((property[6]==null || property[6].equals(""))?"NULL,":("'"+property[6]+"',")) +
                     rtype+"," +
@@ -268,15 +265,14 @@ public class SqlCreater implements Tools {
         StringBuilder sb=new StringBuilder();
         sb.append("CREATE TABLE M_META (\n");
         sb.append("ENNAME varchar(32),\n");
-        sb.append("CNNANE varchar(32),\n");
-        sb.append("PNANE varchar(32),\n");
-        sb.append("ACTIONNAMES varchar(500)\n");
+        sb.append("CNNAME varchar(32),\n");
+        sb.append("PNAME varchar(32)");
         sb.append(");\n ");
 
         sb.append("CREATE TABLE P_META (\n");
         sb.append("ENNAME varchar(32),\n");
-        sb.append("CNNANE varchar(100),\n");
-        sb.append("PNANE varchar(32),\n");
+        sb.append("CNNAME varchar(100),\n");
+        sb.append("PNAME varchar(32),\n");
         sb.append("PGROUP varchar(100),\n");
         sb.append("PTYPE numeric(1),\n");
         sb.append("DEFVALUE varchar(200),\n");
@@ -286,7 +282,7 @@ public class SqlCreater implements Tools {
 
         sb.append("CREATE TABLE R_META (\n");
         sb.append("ENNAME varchar(32),\n");
-        sb.append("CNNANE varchar(100),\n");
+        sb.append("CNNAME varchar(100),\n");
         sb.append("SOURCEMODEL varchar(32),\n");
         sb.append("TARGETMODEL varchar(32)\n");
         sb.append(");\n");

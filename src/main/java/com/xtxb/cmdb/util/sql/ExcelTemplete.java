@@ -153,7 +153,7 @@ public class ExcelTemplete implements Tools {
         sheet.addValidationData(data_validation_list);
 
         constraint = DVConstraint
-                .createExplicitListConstraint(new String[] {"值域","正则","引用"});
+                .createExplicitListConstraint(new String[] {"无","值域","正则","引用"});
         // 设置数据有效性加载在哪个单元格上,四个参数分别是：起始行、终止行、起始列、终止列
         regions = new CellRangeAddressList(1,
                 100, 6, 6);
