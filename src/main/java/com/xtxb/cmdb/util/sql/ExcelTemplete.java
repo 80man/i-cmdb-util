@@ -143,7 +143,7 @@ public class ExcelTemplete implements Tools {
 
         // 加载下拉列表内容
         DVConstraint constraint = DVConstraint
-                .createExplicitListConstraint(new String[] {"字符串","整型","浮点型","时间型","日期型","日期时间型"});
+                .createExplicitListConstraint(new String[] {"字符串","整型","浮点型","时间型","日期型","日期时间型","布尔型"});
         // 设置数据有效性加载在哪个单元格上,四个参数分别是：起始行、终止行、起始列、终止列
         CellRangeAddressList regions = new CellRangeAddressList(1,
                 100, 4, 4);

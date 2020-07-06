@@ -219,6 +219,8 @@ public class SqlCreater implements Tools {
                 type=5;
             }else if(!property[5].equals("日期时间型")){
                 type=6;
+            }else if(!property[5].equals("布尔型")){
+                type=7;
             }
 
             int rtype=0;
