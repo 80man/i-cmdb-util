@@ -27,6 +27,8 @@ public class ExcelTemplete implements Tools {
             fileName=args[0]+args[1];
         }else
             fileName=args[0]+ File.separator+args[1];
+        if(!fileName.toLowerCase().endsWith(".xls"))
+            fileName+=".xls";
         writeFile(fileName,createExcel());
         System.out.println("生成模板完成!");
     }
@@ -72,11 +74,6 @@ public class ExcelTemplete implements Tools {
         cell.setCellValue("英文名称");
         sheet.setColumnWidth(1,3000);
 
-        cell=row.createCell(2);
-        cell.setCellStyle(style);
-        cell.setCellValue("父模型中文名称");
-        sheet.setColumnWidth(2,5000);
-
         style=getDataStyle(sheet.getWorkbook());
         row= sheet.createRow(1);
         cell=row.createCell(0);
@@ -86,10 +83,6 @@ public class ExcelTemplete implements Tools {
         cell=row.createCell(1);
         cell.setCellStyle(style);
         cell.setCellValue("C_VM");
-
-        cell=row.createCell(2);
-        cell.setCellStyle(style);
-        cell.setCellValue("服务器");
 
     }
 
