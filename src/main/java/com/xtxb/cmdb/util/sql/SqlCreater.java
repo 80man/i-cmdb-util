@@ -41,10 +41,10 @@ public class SqlCreater implements Tools {
         System.out.println("检查资源类型是否存在");
         for (Iterator iterator = models.values().iterator(); iterator.hasNext(); ) {
             String[] model =  (String[])iterator.next();
-            if(model[3]!=null && !model[3].equals("") && models.get(model[3])==null){
-                System.out.println("\t第"+model[0]+"行关联的父模型中文名称不存在，请检查Excel并修复问题后导入");
-                return;
-            }
+//            if(model[3]!=null && !model[3].equals("") && models.get(model[3])==null){
+//                System.out.println("\t第"+model[0]+"行关联的父模型中文名称不存在，请检查Excel并修复问题后导入");
+//                return;
+//            }
         }
 
         //检查属性关联的资源类型是否存在
@@ -130,9 +130,8 @@ public class SqlCreater implements Tools {
         while((row=sheet.getRow(i++))!=null){
             String cnName=getCellValue(row.getCell(0));
             String enName=getCellValue(row.getCell(1));
-            String pName=getCellValue(row.getCell(2));
 
-            if(isNull(cnName) && isNull(enName) && isNull(pName)){
+            if(isNull(cnName) && isNull(enName) ){
                 return models;
             }else if(isNull(cnName) || isNull(enName)){
                 System.out.println("\t第"+i+"行有未填写的信息，请检查Excel并修复问题后导入");
@@ -143,7 +142,7 @@ public class SqlCreater implements Tools {
                 System.out.println("\t第"+i+"行中文名称与第"+models.get(cnName)[0]+"行重复，请检查Excel并修复问题后导入");
                 System.exit(0);
             }
-            models.put(cnName,new String[]{""+i,cnName,enName,pName});
+            models.put(cnName,new String[]{""+i,cnName,enName});
         }
 
         return models;
@@ -179,7 +178,7 @@ public class SqlCreater implements Tools {
                 System.out.println("\t第"+i+"行中文名称与第"+properties.get(cnName)[0]+"行重复，请检查Excel并修复问题后导入");
                 System.exit(0);
             }
-            properties.put(cnName,new String[]{""+i,cnName,enName,pName,group,type,defValue,matchRuleType,matchRuleValue});
+            properties.put(enName+"_"+pName,new String[]{""+i,cnName,enName,pName,group,type,defValue,matchRuleType,matchRuleValue});
         }
         return properties;
     }
@@ -193,11 +192,11 @@ public class SqlCreater implements Tools {
         StringBuilder sb=new StringBuilder();
         for (Iterator iterator = models.values().iterator(); iterator.hasNext(); ) {
             String[] model =  (String[])iterator.next();
-            String pName="NULL";
-            if(model[3]!=null && !model[3].equals(""))
-                pName="'"+models.get(model[3])[2]+"'";
+//            String pName="NULL";
+//            if(model[3]!=null && !model[3].equals(""))
+//                pName="'"+models.get(model[3])[2]+"'";
 
-            sb.append("insert into  M_META values('"+model[2]+"','"+model[1]+"',"+pName+" );\n");
+            sb.append("insert into  M_META values('"+model[2]+"','"+model[1]+"' );\n");
         }
 
 
@@ -263,12 +262,11 @@ public class SqlCreater implements Tools {
      */
     private void writeSQLDDL(Map<String,String[]> models,Map<String,String[]> properties,Map<String,String[]> relations){
 
-        List<String> temp=null;
+//        List<String> temp=null;
         StringBuilder sb=new StringBuilder();
         sb.append("CREATE TABLE M_META (\n");
         sb.append("ENNAME varchar(32),\n");
-        sb.append("CNNAME varchar(32),\n");
-        sb.append("PNAME varchar(32)");
+        sb.append("CNNAME varchar(32)\n");
         sb.append(");\n ");
 
         sb.append("CREATE TABLE P_META (\n");
@@ -290,22 +288,22 @@ public class SqlCreater implements Tools {
         sb.append(");\n");
 
         for (Iterator iterator = models.values().iterator(); iterator.hasNext(); ) {
-            temp=new ArrayList<>(4);
+//            temp=new ArrayList<>(4);
             String[] model =  (String[])iterator.next();
-            getParent(model[1],models,temp);
+//            getParent(model[1],models,temp);
             String tname=model[2].toUpperCase();
-            if(!model[2].startsWith("C_"))
-                tname="C_"+model[2].toUpperCase();
+            if(!tname.startsWith("C_"))
+                tname="C_"+tname;
 
             sb.append("CREATE TABLE "+tname +" (\n");
             sb.append("P_OID numeric(20)  not null primary key,\n");
             sb.append("P_SID varchar(32) ");
             for (Iterator<String[]> Iterator2 = properties.values().iterator(); Iterator2.hasNext(); ) {
                 String[] property =  Iterator2.next();
-                if(temp.contains(property[3])){
-                    String cName=property[2].toLowerCase();
-                    if(!cName.startsWith("p_")){
-                        cName="P_"+cName;
+                if(model[1].equals(property[3])){
+                    String eName=property[2].toUpperCase();
+                    if(!eName.startsWith("p_")){
+                        eName="P_"+eName;
                     }
 
                     String type="varchar(200)";
@@ -317,7 +315,7 @@ public class SqlCreater implements Tools {
                         type="numeric(20)";
                     }
 
-                    sb.append(",\n"+cName+"  "+type);
+                    sb.append(",\n"+eName+"  "+type);
                 }
             }
 
@@ -327,9 +325,9 @@ public class SqlCreater implements Tools {
 
         for (Iterator<String[]> Iterator3 = relations.values().iterator(); Iterator3.hasNext(); ) {
             String[] relation =  Iterator3.next();
-            String rtable=relation[2];
+            String rtable=relation[2].toUpperCase();
             if(!rtable.startsWith("R_")){
-                rtable="R_"+rtable.toUpperCase();
+                rtable="R_"+rtable;
             }
             sb.append("CREATE TABLE "+rtable +" (\n");
             sb.append("R_SID numeric(20),\n");
