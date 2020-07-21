@@ -242,7 +242,7 @@ public class SqlCreater implements Tools {
 
         for (Iterator iterator = relations.values().iterator(); iterator.hasNext(); ) {
             String[] relation =  (String[])iterator.next();
-            sb.append("insert into  R_META values('"+relation[2]+"','"+relation[1]+"','"+relation[3]+"','"+relation[4]+"');\n");
+            sb.append("insert into  R_META values('"+relation[2]+"','"+relation[1]+"','"+models.get(relation[3])[2]+"','"+models.get(relation[4])[2]+"');\n");
         }
 
         try(
